@@ -46,7 +46,7 @@ ION_LOG_LOSS = {  # non-negative (subtract values)
 PREFIX_IONS = ["B", "B13C", "BNH3", "BH20", "A", "ANH3", "AH20"]
 SUFFIX_IONS = ["Y", "Y13C", "YNH3", "YH20"]
 
-PEPTIDE_VALUES = {
+AA_VALUES = {
     "A": 71,
     "R": 156,
     "N": 114,
@@ -73,7 +73,7 @@ PEPTIDE_VALUES = {
 def getvalue(amino):
     """getvalue(amino) -> int"""
     assert len(amino) == 1
-    return PEPTIDE_VALUES[str(amino)]
+    return AA_VALUES[str(amino)]
 
 # return dict of spectrum
 def get_spectrum(spectrum_file):
@@ -196,8 +196,61 @@ def q2(spectrum_file, sequence):
     print(sequence, log_score)
     sys.exit()
 
+class Node:
+    def __init__(self, l, a, v, i):
+        self.level = l
+        self.aa = a
+        self.value = v
+        self.intensity = i
+
+    def __str__(self):
+        return "{0}:{1}:{2}:level:{3}".format(self.aa, self.value, self.intensity, self.level)
+
+def node_cmp(n):
+    return n.intensity
+
 def q3a(spectrum_file):
     """denovo sequence using b-ions -> prints int of sequence score"""
+    spectrum = get_spectrum(spectrum_file)
+    ### We only need the keys for b-ion based denovo
+    par_mass = next(iter(spectrum))
+    last_b_ion = par_mass - 18
+    intensity = 0
+    level = 0
+    routes = []
+
+    # STEP 1 BUILD A GRAPH while updating intensities
+    # STEP 2 PICK ROUTE WITH HIHGEST INTENSITY
+    if last_b_ion in spectrum.keys():
+        intensity = spectrum[last_b_ion]
+    if 1 not in spectrum.keys():
+        spectrum[1] = 0         # WE END at H-ion
+
+    for k,v in AA_VALUES.items(): # start our graph, only edges which are possible from end
+        if last_b_ion - v in spectrum.keys():
+            routes.append(Node(0, k, last_b_ion - v, spectrum[last_b_ion-v]))
+            # find route to start
+    for route in routes:
+        ##TODO: BASE CASE
+        match_found = False
+        for k,v in AA_VALUES.items():
+            if (route.value - v) in spectrum.keys():
+                match_found = True
+                routes.append(Node(route.level + 1, k + route.aa, route.value - v, route.intensity + spectrum[route.value - v]))
+                if route.level + 1 > level:
+                    level = route.level+1
+
+    final_routes = []
+    for route in routes:
+        if route.level == level:
+            final_routes.append(route)
+
+    final_routes.sort(key=node_cmp)
+
+    final_route = final_routes.pop()
+
+    print(final_route.aa, final_route.intensity)
+
     sys.exit()
 
 def q3b(spectrum_file):
