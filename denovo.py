@@ -196,6 +196,12 @@ def q2(spectrum_file, sequence):
     print(sequence, log_score)
     sys.exit()
 
+def q3a:
+
+def q3b:
+
+def q3c:
+
 # TODO: argv validations & better err messages
 if len(sys.argv) == 1:
     print("No inputs", file=sys.stderr)
@@ -207,6 +213,12 @@ if sys.argv[1] == "q1a":
 elif sys.argv[1] == "q1b":
     q1b(sys.argv[2], sys.argv[3])
 elif sys.argv[1] == "q2":
+    q2(sys.argv[2], sys.argv[3])
+elif sys.argv[1] == "q3a":
+    q2(sys.argv[2], sys.argv[3])
+elif sys.argv[1] == "q3b":
+    q2(sys.argv[2], sys.argv[3])
+elif sys.argv[1] == "q3c":
     q2(sys.argv[2], sys.argv[3])
 else:
     print("incorrect input parameters", file=sys.stderr)
