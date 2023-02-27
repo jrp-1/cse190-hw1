@@ -1,12 +1,10 @@
 """Author: Janne Rapakko (A08240805)
 denovo.py
 CSE 190 (Bandeira) - Homework 1"""
-import sys
+import sys # cmd line args
+import math # logs
 
-###### GLOBAL VARS
-ION_MASS = 1
-H20_MASS = 18
-### ION OFFESETS
+### ION OFFSETS
 ION_OFFSETS = {
     "B": 1,
     "B13C": 2,
@@ -46,6 +44,8 @@ ION_LOG_LOSS = {  # non-negative (subtract values)
     "YNH3": 0.02,
     "YH20": 0.07
 }
+PREFIX_IONS = ["B", "B13C", "BNH3", "BH20", "A", "ANH3", "AH20"]
+SUFFIX_IONS = ["Y", "Y13C", "YNH3", "YH20"]
 
 # amino acid weight in Da
 def getvalue(amino):
@@ -92,8 +92,8 @@ def get_spectrum(spectrum_file):
     return spectra
 
 def get_seq_dict_b(sequence):
-    """get_seq_dict_b(sequence) -> dict"""
-    #fragment scores b-ions
+    """get_seq_dict_b(sequence) -> dict
+    fragment scores b-ions"""
     frag_scores = {}
     assert isinstance(sequence, str)
     for i in range(1, len(sequence) + 1):
@@ -104,8 +104,8 @@ def get_seq_dict_b(sequence):
     return frag_scores
 
 def get_seq_dict_y(sequence):
-    """get_seq_dict_b(sequence) -> dict"""
-    #fragment scores y-ions
+    """get_seq_dict_b(sequence) -> dict
+    fragment scores y-ions"""
     frag_scores = {}
     assert isinstance(sequence, str)
     y_seq = sequence[::-1]
@@ -152,11 +152,49 @@ def q1b(spectrum_file, sequence):
     print(sequence,score)
     sys.exit()
 
+class Fragment:
+    def __init__(self, p, s):
+        self.prefix = p
+        self.suffix = s
+        self.prefix_score = 0
+        self.suffix_score = 0
+        for i in range(0, len(self.prefix)):
+            self.prefix_score += getvalue(self.prefix[i])
+        for i in range(0, len(self.suffix)):
+            self.suffix_score += getvalue(self.suffix[i])
+
+    def __str__(self):
+        return "{0}.{1}:{2},{3}".format(self.prefix, self.suffix, self.prefix_score, self.suffix_score)
+
+def get_fragments(sequence):
+    """get_fragments(sequence) -> list[Fragment]"""
+    fragments = []
+    assert isinstance(sequence, str)
+    seq_len = len(sequence)
+    for i in range(1, seq_len):
+        fragments.append(Fragment(sequence[:i], sequence[i:seq_len]))
+    return fragments
+
 def q2(spectrum_file, sequence):
     """q2(spectrum_file, sequence) -> print int
     str spectrum_file, sequence
     q2 peptide match score using log-likelihood scores for all a/b/y-ions"""
-    pct_score = 0.0
+    log_score = 0.0
+    spectrum = get_spectrum(spectrum_file)
+    fragments = get_fragments(sequence)
+    for fragment in fragments: # iterate through our prefixes & suffixes
+        for p_ion in PREFIX_IONS: # iterate through b/a-ions
+            if fragment.prefix_score + ION_OFFSETS[p_ion] in spectrum.keys():
+                log_score += ION_LOG_GAIN[p_ion]
+            else:
+                log_score -= ION_LOG_LOSS[p_ion]
+        for s_ion in SUFFIX_IONS:
+            if fragment.suffix_score + ION_OFFSETS[s_ion] in spectrum.keys():
+                log_score += ION_LOG_GAIN[s_ion]
+            else:
+                log_score -= ION_LOG_LOSS[s_ion]
+    print(sequence, log_score)
+    sys.exit()
 
 # TODO: argv validations & better err messages
 if len(sys.argv) == 1:
