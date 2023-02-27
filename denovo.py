@@ -6,6 +6,46 @@ import sys
 ###### GLOBAL VARS
 ION_MASS = 1
 H20_MASS = 18
+### ION OFFESETS
+ION_OFFSETS = {
+    "B": 1,
+    "B13C": 2,
+    "BNH3": -16,
+    "BH20": -17,
+    "A": -27,
+    "ANH3": -44,
+    "AH20": -45,
+    "Y": 19,
+    "Y13C": 20,
+    "YNH3": 2,
+    "YH20": 1
+}
+ION_LOG_GAIN = {
+    "B": 2.33,
+    "B13C": 0.14,
+    "BNH3": 0.58,
+    "BH20": 0.26,
+    "A": 0.77,
+    "ANH3": 0.14,
+    "AH20": 0.58,
+    "Y": 2.38,
+    "Y13C": 0.68,
+    "YNH3": 0.14,
+    "YH20": 0.49
+}
+ION_LOG_LOSS = {  # non-negative (subtract values)
+    "B": 0.85,
+    "B13C": 0.02,
+    "BNH3": 0.08,
+    "BH20": 0.03,
+    "A": 0.12,
+    "ANH3": 0.02,
+    "AH20": 0.08,
+    "Y": 0.91,
+    "Y13C": 0.1,
+    "YNH3": 0.02,
+    "YH20": 0.07
+}
 
 # amino acid weight in Da
 def getvalue(amino):
@@ -58,7 +98,7 @@ def get_seq_dict_b(sequence):
     assert isinstance(sequence, str)
     for i in range(1, len(sequence) + 1):
         if frag_scores.get(sequence[:i-1]) is None: # we don't a previous value
-            frag_scores[sequence[:i]] = getvalue(sequence[i-1]) + ION_MASS
+            frag_scores[sequence[:i]] = getvalue(sequence[i-1]) + ION_OFFSETS["B"]
         else: # base case (we have no keys)
             frag_scores[sequence[:i]] = frag_scores[sequence[:i-1]] + getvalue(sequence[i-1])
     return frag_scores
@@ -68,11 +108,13 @@ def get_seq_dict_y(sequence):
     #fragment scores y-ions
     frag_scores = {}
     assert isinstance(sequence, str)
-    for i in range(1, len(sequence) + 1):
-        if frag_scores.get(sequence[:i-1]) is None: # we don't a previous value
-            frag_scores[sequence[:i]] = getvalue(sequence[i-1]) + ION_MASS + H20_MASS
+    y_seq = sequence[::-1]
+    ## NOTE: KEYS ARE NOT IN ORDER (REVERSE OF ACTUAL y-ion fragments)
+    for i in range(1, len(y_seq)):
+        if frag_scores.get(y_seq[:i-1]) is None: # we don't a previous value
+            frag_scores[y_seq[:i]] = getvalue(y_seq[i-1]) + ION_OFFSETS["Y"]
         else: # base case (we have no keys)
-            frag_scores[sequence[:i]] = frag_scores[sequence[:i-1]] + getvalue(sequence[i-1])
+            frag_scores[y_seq[:i]] = frag_scores[y_seq[:i-1]] + getvalue(y_seq[i-1])
     return frag_scores
 
 # q1a & q2b BOTH DOn'T INCLUDE FULL-LENGTH/UNFRAGMENTED PEPTIDE IONS
@@ -110,10 +152,11 @@ def q1b(spectrum_file, sequence):
     print(sequence,score)
     sys.exit()
 
-def q2(spectrum_file, sequence)
+def q2(spectrum_file, sequence):
     """q2(spectrum_file, sequence) -> print int
     str spectrum_file, sequence
     q2 peptide match score using log-likelihood scores for all a/b/y-ions"""
+    pct_score = 0.0
 
 # TODO: argv validations & better err messages
 if len(sys.argv) == 1:
