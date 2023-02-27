@@ -3,8 +3,6 @@ denovo.py
 CSE 190 (Bandeira) - Homework 1"""
 import sys
 
-print(sys.argv[1:])
-
 ###### GLOBAL VARS
 ION_MASS = 1
 H20_MASS = 18
@@ -59,7 +57,7 @@ def get_seq_dict_b(sequence):
     frag_scores = {}
     assert isinstance(sequence, str)
     for i in range(1, len(sequence) + 1):
-        if frag_scores.get(sequence[:i-1]) == None: # we don't a previous value
+        if frag_scores.get(sequence[:i-1]) is None: # we don't a previous value
             frag_scores[sequence[:i]] = getvalue(sequence[i-1]) + ION_MASS
         else: # base case (we have no keys)
             frag_scores[sequence[:i]] = frag_scores[sequence[:i-1]] + getvalue(sequence[i-1])
@@ -71,7 +69,7 @@ def get_seq_dict_y(sequence):
     frag_scores = {}
     assert isinstance(sequence, str)
     for i in range(1, len(sequence) + 1):
-        if frag_scores.get(sequence[:i-1]) == None: # we don't a previous value
+        if frag_scores.get(sequence[:i-1]) is None: # we don't a previous value
             frag_scores[sequence[:i]] = getvalue(sequence[i-1]) + ION_MASS + H20_MASS
         else: # base case (we have no keys)
             frag_scores[sequence[:i]] = frag_scores[sequence[:i-1]] + getvalue(sequence[i-1])
@@ -80,7 +78,7 @@ def get_seq_dict_y(sequence):
 # q1a & q2b BOTH DOn'T INCLUDE FULL-LENGTH/UNFRAGMENTED PEPTIDE IONS
 
 def q1a(spectrum_file, sequence):
-    """q1a(spectrum_file, sequence) -> int
+    """q1a(spectrum_file, sequence) -> print int
     str spectrum_file, str sequence
     q1a Peptide match score using intensity of only main b-ions"""
     score = 0
@@ -91,9 +89,10 @@ def q1a(spectrum_file, sequence):
             continue
         score += spectrum[b_val]
     print(sequence, score)
+    sys.exit()
 
 def q1b(spectrum_file, sequence):
-    """q1b(spectrum_file, sequence) -> int
+    """q1b(spectrum_file, sequence) -> print int
     str spectrum_file, str sequence
     q1b peptide match score using intensity of main b -ins and y-ions"""
     score = 0
@@ -109,11 +108,25 @@ def q1b(spectrum_file, sequence):
             continue
         score += spectrum[y_val]
     print(sequence,score)
+    sys.exit()
 
-# TODO: argv validations
+def q2(spectrum_file, sequence)
+    """q2(spectrum_file, sequence) -> print int
+    str spectrum_file, sequence
+    q2 peptide match score using log-likelihood scores for all a/b/y-ions"""
+
+# TODO: argv validations & better err messages
+if len(sys.argv) == 1:
+    print("No inputs", file=sys.stderr)
+    sys.exit(1)
 
 # dynamic fn call
 if sys.argv[1] == "q1a":
     q1a(sys.argv[2], sys.argv[3])
-if sys.argv[1] == "q1b":
+elif sys.argv[1] == "q1b":
     q1b(sys.argv[2], sys.argv[3])
+elif sys.argv[1] == "q2":
+    q2(sys.argv[2], sys.argv[3])
+else:
+    print("incorrect input parameters", file=sys.stderr)
+    sys.exit(2)
