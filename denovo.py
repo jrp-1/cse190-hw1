@@ -96,7 +96,7 @@ def get_seq_dict_b(sequence):
     fragment scores b-ions"""
     frag_scores = {}
     assert isinstance(sequence, str)
-    for i in range(1, len(sequence) + 1):
+    for i in range(1, len(sequence)):
         if frag_scores.get(sequence[:i-1]) is None: # we don't a previous value
             frag_scores[sequence[:i]] = getvalue(sequence[i-1]) + ION_OFFSETS["B"]
         else: # base case (we have no keys)
