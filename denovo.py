@@ -47,33 +47,34 @@ ION_LOG_LOSS = {  # non-negative (subtract values)
 PREFIX_IONS = ["B", "B13C", "BNH3", "BH20", "A", "ANH3", "AH20"]
 SUFFIX_IONS = ["Y", "Y13C", "YNH3", "YH20"]
 
+PEPTIDE_VALUES = {
+    "A": 71,
+    "R": 156,
+    "N": 114,
+    "D": 115,
+    "C": 103,
+    "E": 129,
+    "Q": 128,
+    "G": 57,
+    "H": 137,
+    "I": 113,
+    "L": 113,
+    "K": 128,
+    "M": 131,
+    "F": 147,
+    "P": 97,
+    "S": 87,
+    "T": 101,
+    "W": 186,
+    "Y": 163,
+    "V": 99
+}
+
 # amino acid weight in Da
 def getvalue(amino):
     """getvalue(amino) -> int"""
-    values = {
-            "A": 71,
-            "R": 156,
-            "N": 114,
-            "D": 115,
-            "C": 103,
-            "E": 129,
-            "Q": 128,
-            "G": 57,
-            "H": 137,
-            "I": 113,
-            "L": 113,
-            "K": 128,
-            "M": 131,
-            "F": 147,
-            "P": 97,
-            "S": 87,
-            "T": 101,
-            "W": 186,
-            "Y": 163,
-            "V": 99
-        }
     assert len(amino) == 1
-    return values[str(amino)]
+    return PEPTIDE_VALUES[str(amino)]
 
 # return dict of spectrum
 def get_spectrum(spectrum_file):
@@ -196,11 +197,14 @@ def q2(spectrum_file, sequence):
     print(sequence, log_score)
     sys.exit()
 
-def q3a:
+def q3a(spectrum_file):
+    sys.exit()
 
-def q3b:
+def q3b(spectrum_file):
+    sys.exit()
 
-def q3c:
+def q3c(spectrum_file):
+    sys.exit()
 
 # TODO: argv validations & better err messages
 if len(sys.argv) == 1:
@@ -215,11 +219,11 @@ elif sys.argv[1] == "q1b":
 elif sys.argv[1] == "q2":
     q2(sys.argv[2], sys.argv[3])
 elif sys.argv[1] == "q3a":
-    q2(sys.argv[2], sys.argv[3])
+    q2(sys.argv[2])
 elif sys.argv[1] == "q3b":
-    q2(sys.argv[2], sys.argv[3])
+    q2(sys.argv[2])
 elif sys.argv[1] == "q3c":
-    q2(sys.argv[2], sys.argv[3])
+    q2(sys.argv[2])
 else:
     print("incorrect input parameters", file=sys.stderr)
     sys.exit(2)
