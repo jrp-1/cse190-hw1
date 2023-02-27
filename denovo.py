@@ -196,7 +196,7 @@ def q2(spectrum_file, sequence):
     print(sequence, log_score)
     sys.exit()
 
-class Node:
+class Node_b:
     def __init__(self, l, a, v, i):
         self.level = l
         self.aa = a
@@ -206,7 +206,7 @@ class Node:
     def __str__(self):
         return "{0}:{1}:{2}:level:{3}".format(self.aa, self.value, self.intensity, self.level)
 
-def node_cmp(n):
+def node_cmp_b(n):
     return n.intensity
 
 def q3a(spectrum_file):
@@ -228,7 +228,7 @@ def q3a(spectrum_file):
 
     for k,v in AA_VALUES.items(): # start our graph, only edges which are possible from end
         if last_b_ion - v in spectrum.keys():
-            routes.append(Node(0, k, last_b_ion - v, spectrum[last_b_ion-v]))
+            routes.append(Node_b(0, k, last_b_ion - v, spectrum[last_b_ion-v]))
             # find route to start
     for route in routes:
         ##TODO: BASE CASE
@@ -236,7 +236,7 @@ def q3a(spectrum_file):
         for k,v in AA_VALUES.items():
             if (route.value - v) in spectrum.keys():
                 match_found = True
-                routes.append(Node(route.level + 1, k + route.aa, route.value - v, route.intensity + spectrum[route.value - v]))
+                routes.append(Node_b(route.level + 1, k + route.aa, route.value - v, route.intensity + spectrum[route.value - v]))
                 if route.level + 1 > level:
                     level = route.level+1
 
@@ -245,7 +245,7 @@ def q3a(spectrum_file):
         if route.level == level:
             final_routes.append(route)
 
-    final_routes.sort(key=node_cmp)
+    final_routes.sort(key=node_cmp_b)
 
     final_route = final_routes.pop()
 
@@ -255,6 +255,9 @@ def q3a(spectrum_file):
 
 def q3b(spectrum_file):
     """denovo sequence using b & y-ions -> prints int of sequence score"""
+    spectrum = get_spectrum(spectrum_file)
+    parent_mass = next(iter(spectrum))
+    last_b_ion = parent_mass - 18
     sys.exit()
 
 def q3c(spectrum_file):
