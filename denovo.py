@@ -2,7 +2,6 @@
 denovo.py
 CSE 190 (Bandeira) - Homework 1"""
 import sys # cmd line args
-import math # logs
 
 ### ION OFFSETS
 ION_OFFSETS = {
@@ -198,12 +197,15 @@ def q2(spectrum_file, sequence):
     sys.exit()
 
 def q3a(spectrum_file):
+    """denovo sequence using b-ions -> prints int of sequence score"""
     sys.exit()
 
 def q3b(spectrum_file):
+    """denovo sequence using b & y-ions -> prints int of sequence score"""
     sys.exit()
 
 def q3c(spectrum_file):
+    """denovo sequence using log-likelihoods -> prints int of sequence score"""
     sys.exit()
 
 # TODO: argv validations & better err messages
@@ -219,11 +221,11 @@ elif sys.argv[1] == "q1b":
 elif sys.argv[1] == "q2":
     q2(sys.argv[2], sys.argv[3])
 elif sys.argv[1] == "q3a":
-    q2(sys.argv[2])
+    q3a(sys.argv[2])
 elif sys.argv[1] == "q3b":
-    q2(sys.argv[2])
+    q3b(sys.argv[2])
 elif sys.argv[1] == "q3c":
-    q2(sys.argv[2])
+    q3c(sys.argv[2])
 else:
     print("incorrect input parameters", file=sys.stderr)
     sys.exit(2)
