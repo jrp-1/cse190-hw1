@@ -280,24 +280,33 @@ def q3b(spectrum_file):
     for k,v in AA_VALUES.items(): # only possible, check both b and y-ions
         if last_b_ion - v in spectrum.keys():
             # TODO: reverse
-            # initialize y-ion to 0
-            routes.append(Node_by(0, [k], last_b_ion - v, 0, spectrum[last_b_ion-v]))
+            # initialize y-ion to 19
+            routes.append(Node_by(0, [k], last_b_ion - v, 19, spectrum[last_b_ion-v]))
             # print(k, last_b_ion - v, spectrum[last_b_ion - v], parent_mass - v, spectrum[parent_mass - v])
 
     for route in routes:
         for k,v in AA_VALUES.items():
             if (route.val_b - v) in spectrum.keys():
-                routes.append(Node_by(route.level + 1, [k] + route.aa, route.val_b - v, 0, route.intensity + spectrum[route.val_b - v]))
+                routes.append(Node_by(route.level + 1, [k] + route.aa, route.val_b - v, 19, route.intensity + spectrum[route.val_b - v]))
                 if route.level + 1 > level:
                     level = route.level + 1
 
-    final_routes = []
+    final_b_routes = []
     for route in routes:
         if route.level == level:
-            final_routes.append(route)
-            print(route)
+            final_b_routes.append(route)
 
     # TODO; reverse -- y to parent_max
+    for route in final_b_routes:
+        for i in range(0, route.level):
+            yval = getvalue(route.aa[i]) + route.val_y
+            if yval in spectrum.keys():
+                route.intensity += spectrum[yval]
+                route.val_y = yval
+                print(route, i)
+        print(route)
+            # else:
+                # final_b_routes.remove(route)
 
 
     sys.exit()
