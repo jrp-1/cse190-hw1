@@ -231,14 +231,11 @@ def q3a(spectrum_file):
             routes.append(Node_b(0, k, last_b_ion - v, spectrum[last_b_ion-v]))
             # find route to start
     for route in routes:
-        ##TODO: BASE CASE
-        match_found = False
         for k,v in AA_VALUES.items():
             if (route.value - v) in spectrum.keys():
-                match_found = True
                 routes.append(Node_b(route.level + 1, k + route.aa, route.value - v, route.intensity + spectrum[route.value - v]))
                 if route.level + 1 > level:
-                    level = route.level+1
+                    level = route.level + 1
 
     final_routes = []
     for route in routes:
@@ -253,11 +250,56 @@ def q3a(spectrum_file):
 
     sys.exit()
 
+class Node_by:
+    def __init__(self, l, a, vb, vy, i):
+        self.level = l
+        self.aa = [] + a
+        self.val_b = vb
+        self.val_y = vy
+        self.intensity = i
+
+    def __str__(self):
+        return "{0}::b:{1}::y:{2}:{3}:level:{4}".format(self.aa, self.val_b, self.val_y, self.intensity, self.level)
+
 def q3b(spectrum_file):
     """denovo sequence using b & y-ions -> prints int of sequence score"""
     spectrum = get_spectrum(spectrum_file)
     parent_mass = next(iter(spectrum))
     last_b_ion = parent_mass - 18
+    end = parent_mass - ION_OFFSETS["Y"]
+    intensity = 0
+    level = 0
+    routes = []
+    if last_b_ion in spectrum.keys():
+        intensity = spectrum[last_b_ion]
+    if 1 not in spectrum.keys():    ## might not need this one here
+        spectrum[1] = 0         # WE END at H-ion
+
+    spectrum[end] = 0              # OTHER END at parent mass (y-ions)
+
+    for k,v in AA_VALUES.items(): # only possible, check both b and y-ions
+        if last_b_ion - v in spectrum.keys():
+            # TODO: reverse
+            # initialize y-ion to 0
+            routes.append(Node_by(0, [k], last_b_ion - v, 0, spectrum[last_b_ion-v]))
+            # print(k, last_b_ion - v, spectrum[last_b_ion - v], parent_mass - v, spectrum[parent_mass - v])
+
+    for route in routes:
+        for k,v in AA_VALUES.items():
+            if (route.val_b - v) in spectrum.keys():
+                routes.append(Node_by(route.level + 1, [k] + route.aa, route.val_b - v, 0, route.intensity + spectrum[route.val_b - v]))
+                if route.level + 1 > level:
+                    level = route.level + 1
+
+    final_routes = []
+    for route in routes:
+        if route.level == level:
+            final_routes.append(route)
+            print(route)
+
+    # TODO; reverse -- y to parent_max
+
+
     sys.exit()
 
 def q3c(spectrum_file):
